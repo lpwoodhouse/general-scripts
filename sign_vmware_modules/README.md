@@ -8,7 +8,7 @@ Ref Article: https://kb.vmware.com/s/article/2146460 \
 Alt Solution: https://askubuntu.com/questions/1096052/vmware-15-error-on-ubuntu-18-4-could-not-open-dev-vmmon-no-such-file-or-dire
 ### Step 1: Get the Script
 ```shell
-wget https://raw.githubusercontent.com/lpwoodhouse/sign_vmware_drivers/master/sign_vm_modules.sh
+wget https://raw.githubusercontent.com/lpwoodhouse/scripts/main/sign_vmware_modules/sign_vm_modules.sh
 ```
 ### Step 2: Make the script executable
 ```shell

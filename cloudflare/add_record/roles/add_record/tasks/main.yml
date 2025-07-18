@@ -1,0 +1,20 @@
+---
+# main task for add_record role
+
+- name: create a A record pointing to 127.0.0.1
+  cloudflare_dns:
+    zone: "{{ root_domain }}"
+    record: "{{ sub_domain }}"
+    type: A
+    value: 127.0.0.1
+    proxied: no
+    account_email: "{{ auth_email }}"
+    account_api_key: "{{ auth_key }}"
+    state: present
+  register: record
+
+# following the creation of the new A record a subsequent task/role is required to update the address value
+# the ddns_update role is utilized to achieve this
+
+- debug:
+    msg: "{{ record }}"

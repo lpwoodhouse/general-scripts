@@ -1,0 +1,6 @@
+---
+# default vars for add_record role
+auth_email: user@example.com
+auth_key: <auth_key>
+sub_domain: <sub_domain>
+root_domain: example.com

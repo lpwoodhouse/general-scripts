@@ -1,0 +1,17 @@
+---
+# main task for ddns_update role
+
+- name: copy template to script directory
+  template:
+    src: template.sh.j2
+    dest: "{{ script_path }}/{{ sub_domain }}.{{ root_domain }}.sh"
+    owner: "{{ ansible_user }}"
+    group: users
+    mode: 0700
+
+- name: run ddns update script
+  shell: "./{{ sub_domain }}.{{root_domain }}.sh"
+  args:
+    chdir: "{{ script_path }}"
+
+# following the execution of the update script, subsequent updates can be performed by creating a scheduled task or cron job

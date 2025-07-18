@@ -1,0 +1,40 @@
+---
+- block:
+  - name: Download windows_exporter package
+    win_get_url:
+      url: 'https://github.com/prometheus-community/windows_exporter/releases/download/v{{ _windows_exporter_version }}/windows_exporter-{{ _windows_exporter_version }}-{{ _win_arch }}.msi'
+      dest: "{{ _windows_exporter_download_dir }}"
+      checksum: "{{ __windows_exporter_checksum }}"
+      checksum_algorithm: sha256
+    register: _download_installer
+    until: _download_installer is succeeded
+    retries: 5
+    delay: 2
+  - name: Install windows_exporter package
+    win_command: 'msiexec /i windows_exporter-{{ _windows_exporter_version }}-{{ _win_arch }}.msi ENABLED_COLLECTORS="ad,adfs,cache,cpu,cpu_info,cs,container,dfsr,dhcp,dns,fsrmquota,iis,logical_disk,logon,memory,msmq,mssql,netframework_clrexceptions,netframework_clrinterop,netframework_clrjit,netframework_clrloading,netframework_clrlocksandthreads,netframework_clrmemory,netframework_clrremoting,netframework_clrsecurity,net,os,process,remote_fx,service,tcp,time,vmware" TEXTFILE_DIR="C:\custom_metrics" LISTEN_PORT="9115"'
+    args:
+      chdir: "{{ _windows_exporter_download_dir }}"
+    register: _installed_windows_exporter
+  - name: Remove installer package on successful install
+    win_file:
+      path: '{{ _windows_exporter_download_dir }}\windows_exporter-{{ _windows_exporter_version }}-{{ _win_arch }}.msi'
+      state: absent
+    when: _installed_windows_exporter.changed
+  when: _windows_exporter_msi_path | length == 0
+
+- block:
+  - name: Copy windows_exporter package
+    win_copy:
+      src: '{{ _windows_exporter_msi_path }}'
+      dest: "{{ _windows_exporter_download_dir }}"
+      remote_src: "{{ _windows_exporter_msi_remote_src }}"
+    register: __windows_exporter_copied
+  - name: Install windows_exporter package
+    win_command: 'msiexec /i {{ __windows_exporter_copied.dest }} ENABLED_COLLECTORS="ad,adfs,cache,cpu,cpu_info,cs,container,dfsr,dhcp,dns,fsrmquota,iis,logical_disk,logon,memory,msmq,mssql,netframework_clrexceptions,netframework_clrinterop,netframework_clrjit,netframework_clrloading,netframework_clrlocksandthreads,netframework_clrmemory,netframework_clrremoting,netframework_clrsecurity,net,os,process,remote_fx,service,tcp,time,vmware" TEXTFILE_DIR="C:\custom_metrics" LISTEN_PORT="9115"'
+    register: _installed_windows_exporter
+  - name: Remove installer package on successful install
+    win_file:
+      path: '{{ __windows_exporter_copied.dest }}'
+      state: absent
+    when: _installed_windows_exporter.changed
+  when: _windows_exporter_msi_path | length > 0

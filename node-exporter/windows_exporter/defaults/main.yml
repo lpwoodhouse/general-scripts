@@ -1,0 +1,13 @@
+---
+# The release version of windows_exporter to download (e.g. latest, 0.19.0, 0.16.0)
+# Not required if installing from an existing installer on either local or remote host
+_windows_exporter_version: latest
+
+# The path (on local or remote host) to an existing .msi installer for installing windows_exporter
+# Must be blank quotes "" if the file is to be downloaded
+_windows_exporter_msi_path: ""
+# Must be true if the windows exporter .msi path is on the remote host and false is the path is on localhost
+_windows_exporter_msi_remote_src: true
+
+# The directory on the remote host to where the windows exporter .msi installer will be downloaded or copied to
+_windows_exporter_download_dir: 'C:\Windows\Temp'

@@ -1,0 +1,70 @@
+---
+- block:
+  - name: Check validity of _windows_exporter_msi_path
+    win_stat:
+      path: '_windows_exporter_msi_path'
+    changed_when: false
+    register: __windows_exporter_msi_remote_path_valid
+    when: _windows_exporter_msi_remote_src|bool
+  - name: Check validity of _windows_exporter_msi_path
+    win_stat:
+      path: '_windows_exporter_msi_path'
+    delegate_to: localhost
+    changed_when: false
+    register: __windows_exporter_msi_local_path_valid
+    when: not _windows_exporter_msi_remote_src|bool
+  - block:
+    - debug: msg="windows exporter msi path not valid"
+    - meta: end_play
+    when: |
+      (not __windows_exporter_msi_remote_path_valid.stat.exists) or
+      (not __windows_exporter_msi_local_path_valid.stat.exists)
+  when: _windows_exporter_msi_path | length > 0
+
+- name: Check if windows_exporter is installed
+  win_stat:
+    path: '{{ _windows_exporter_install_dir }}'
+  register: __windows_exporter_is_installed
+
+- name: Gather currently installed windows_exporter version (if any)
+  win_file_version:
+    path: '{{ _windows_exporter_install_dir }}\windows_exporter.exe'
+  changed_when: false
+  register: __windows_exporter_current_version_output
+  when: __windows_exporter_is_installed.stat.exists
+
+- block:
+    - name: Get latest release
+      uri:
+        url: "https://api.github.com/repos/prometheus-community/windows_exporter/releases/latest"
+        method: GET
+        return_content: true
+        status_code: 200
+        body_format: json
+      register: __latest_release
+      until: __latest_release.status == 200
+      retries: 5
+
+    - name: "Set windows_exporter version to {{ __latest_release.json.tag_name[1:] }}"
+      set_fact:
+        _windows_exporter_version: "{{ __latest_release.json.tag_name[1:] }}"
+  when:
+    - _windows_exporter_version == "latest"
+    - _windows_exporter_msi_path | length == 0
+  delegate_to: localhost
+  run_once: true
+
+- block:
+    - name: Get checksum list from github
+      set_fact:
+        __checksums: "{{ lookup('url', 'https://github.com/prometheus-community/windows_exporter/releases/download/v' + _windows_exporter_version + '/sha256sums.txt', wantlist=True) | list }}"
+      run_once: true
+
+    - name: "Get checksum for {{ _win_arch }} architecture"
+      set_fact:
+        __windows_exporter_checksum: "{{ item.split(' ')[0] }}"
+      with_items: "{{ __checksums }}"
+      when:
+        - "('windows_exporter-' + _windows_exporter_version + '-' + _win_arch + '.msi') in item"
+  delegate_to: localhost
+  when: _windows_exporter_msi_path | length == 0

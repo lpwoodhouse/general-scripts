@@ -1,0 +1,7 @@
+---
+# handlers for <role>
+
+- name: <handler_name>
+  service:
+    name: <name>
+    state: restarted

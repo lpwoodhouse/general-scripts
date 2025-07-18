@@ -1,0 +1,13 @@
+---
+# default variables for install_docker_centos role
+
+centos_baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-compose-plugin
+
+docker_users:
+  - ansible

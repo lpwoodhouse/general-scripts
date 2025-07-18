@@ -1,0 +1,5 @@
+---
+# default variables for <role>
+
+dockerhub_user: <value>
+dockerhub_pass: <value>

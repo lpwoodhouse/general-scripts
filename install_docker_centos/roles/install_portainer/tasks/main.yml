@@ -1,0 +1,51 @@
+---
+
+- name: ensure docker module requirements
+  block:
+
+  - set_fact: 
+      ansible_python_interpreter: /usr/bin/python3
+
+  - name: install python3-pip
+    package:
+      name: python3-pip
+      state: present
+  - name: install docker sdk for python
+    shell: >
+      pip install docker
+    args:
+      warn: false
+  
+  rescue:
+  
+  - name: install docker sdk for python
+    shell: >
+      pip3 install docker
+    args:
+      warn: false
+
+- name: log into dockerhub
+  docker_login:
+    username: "{{ dockerhub_user }}"
+    password: "{{ dockerhub_pass }}"
+
+- name: create portainer_data volume
+  shell: >
+    docker volume create portainer_data
+
+- name: install portainer container
+  shell: >
+    docker run -d \
+    --name portainer \
+    --restart=always \
+    --privileged \
+    -p 8000:8000 \
+    -p 9000:9000 \
+    -p 9443:9443 \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v portainer_data:/data \
+    portainer/portainer-ce:latest
+  register: portainer_status
+
+- debug:
+    msg: "{{ portainer_status }}"

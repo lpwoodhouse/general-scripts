@@ -1,0 +1,8 @@
+---
+zbx_agent2: false
+zbx_agent_release: 6.2.3
+zbx_server: 192.168.1.1
+zbx_passive_port: 10050
+zbx_active_port: 10051
+download_dest: '%USERPROFILE%\Downloads'
+install_dest: 'C:\zabbix'

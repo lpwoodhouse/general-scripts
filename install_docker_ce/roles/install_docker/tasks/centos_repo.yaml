@@ -1,0 +1,11 @@
+---
+- name: update installed packages via yum
+  yum:
+    name: "*, yum-utils"
+    state: latest
+
+- name: add docker-ce repository
+  shell: |
+    sudo yum-config-manager \
+    --add-repo \
+    {{ centos_baseurl }}

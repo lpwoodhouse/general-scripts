@@ -1,0 +1,11 @@
+---
+- name:  install dnf-utils
+  dnf:
+    name: dnf-utils
+    state: latest
+
+- name: add docker-ce repository
+  shell: |
+    sudo dnf config-manager \
+    --add-repo \
+    {{ fedora_baseurl }}

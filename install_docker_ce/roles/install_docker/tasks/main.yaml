@@ -1,0 +1,21 @@
+---
+- name: configure docker repository
+  include_tasks: "{{ansible_distribution|lower}}_repo.yaml"
+
+- name: install docker packages
+  package:
+    name: "{{ docker_packages | join(',') }}"
+    state: present
+
+- name: add users to docker group
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: yes
+  loop: "{{ docker_users }}"
+
+- name: enable docker service
+  service:
+    name: docker
+    enabled: yes
+    state: started

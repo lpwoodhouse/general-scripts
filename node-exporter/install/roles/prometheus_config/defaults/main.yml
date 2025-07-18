@@ -1,0 +1,5 @@
+---
+prometheus_host: 192.168.0.1
+prometheus_config_dir: /etc/prometheus # default location of prometheus.yml 
+prometheus_job_name: Example Job # enter your desired job name
+prometheus_scrape_interval: 10s # prometheus global default is usually 15s

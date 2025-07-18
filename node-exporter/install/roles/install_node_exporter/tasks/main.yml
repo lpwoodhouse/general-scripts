@@ -1,0 +1,32 @@
+---
+- name: create install directory
+  file:
+    path: "{{ install_path }}"
+    state: directory
+
+- name: download and unarchive node_exporter
+  unarchive:
+    src: "{{ download_url }}"
+    dest: "{{ install_path }}"
+    remote_src: yes
+    extra_opts:
+    - --strip-components=1
+  register: unarchive_result
+
+- name: create systemd service config
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: start node_exporter.service
+  systemd:
+    name: node_exporter.service
+    enabled: yes
+    state: started
+
+- name: check metrics url
+  uri:
+    url: http://{{ ansible_default_ipv4.address }}:{{ web_port }}/metrics

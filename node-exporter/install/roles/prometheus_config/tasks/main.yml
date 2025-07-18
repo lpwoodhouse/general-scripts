@@ -1,0 +1,34 @@
+---
+# configure prometheus.yml
+- name: update prometheus.yml configuration
+  block:
+
+  - name: create temp dir prometheus.d
+    file:
+      path: "{{ prometheus_config_dir }}/prometheus.d"
+      state: directory
+
+  - name: copy existing config
+    copy:
+      src: "{{ prometheus_config_dir }}/prometheus.yml"
+      dest: "{{ prometheus_config_dir }}/prometheus.d/prometheus1.yml"
+      remote_src: yes
+
+  - name: transfer new config to prometheus host
+    template:
+      src: prometheus2.yml.j2
+      dest: "{{ prometheus_config_dir }}/prometheus.d/prometheus2.yml"
+  
+  - name: assemble final config
+    assemble:
+      src: "{{ prometheus_config_dir }}/prometheus.d"
+      dest: "{{ prometheus_config_dir }}/prometheus.yml"      
+      backup: yes
+    notify: restart prometheus
+  
+  - name: remove temp config files
+    file:
+      path: "{{ prometheus_config_dir }}/prometheus.d"
+      state: absent  
+
+  delegate_to: "{{ prometheus_host }}"

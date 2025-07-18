@@ -1,0 +1,7 @@
+---
+# handlers for ftp_repo role
+
+- name: restart vsftpd
+  service:
+    name: vsftpd
+    state: restarted

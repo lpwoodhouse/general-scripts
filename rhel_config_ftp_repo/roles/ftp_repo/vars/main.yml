@@ -1,0 +1,12 @@
+---
+# static variables required for ftp_repo role
+
+rp_packages:
+  - vsftpd
+  - firewalld
+
+rp_services:
+  - vsftpd
+  - firewalld
+
+rp_path: /var/ftp/repo

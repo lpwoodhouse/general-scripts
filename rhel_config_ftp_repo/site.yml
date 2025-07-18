@@ -1,0 +1,27 @@
+---
+# main task for role execution
+- name: configure inventory hosts
+  hosts: localhost
+  gather_facts: no
+  
+  vars:
+    linux_hosts: "{{ survey_hosts.split('\n') }}"  
+  
+  tasks:
+    
+  - name: make host group from survey hosts list
+    add_host:
+      hostname: "{{ item }}"
+      groupname: new_group      
+    loop: "{{ linux_hosts }}"
+
+- name: configure ftp package repository
+  hosts: new_group,!localhost
+  gather_facts: true
+  become: true
+  
+  tasks:
+  
+  - name: create ftp repository
+    include_role:
+      name: ftp_repo

@@ -1,0 +1,46 @@
+---
+# main tasks for ftp_repo role
+
+- name: check for {{ iso_device }}
+  stat:
+    path: "{{ iso_device }}"
+  register: device_to_use
+  
+- name: fail if {{ iso_device }} does not exist
+  fail:
+    msg: "The device {{ iso_device }} does not exist"
+  when: not device_to_use.stat.exists
+
+- name: install packages
+  package:
+    name: "{{ rp_packages | join(',') }}"
+    state: latest
+
+- name: enable services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop: "{{ rp_services }}"
+
+- name: grant ftp anonymous user access
+  lineinfile:
+    path: /etc/vsftpd/vsftpd.conf
+    regexp: '^anonymous_.+$'
+    line: 'anonymous_enable=YES'
+    state: present
+  notify: restart vsftpd
+
+- name: set ftpd_full_access selinux bool
+  seboolean:
+    name: ftpd_full_access
+    state: on
+    persistent: true
+
+- name: mount repository
+  mount:
+    path: "{{ rp_path }}"
+    src: "{{ iso_device }}"
+    fstype: iso9660
+    opts: defaults
+    state: mounted

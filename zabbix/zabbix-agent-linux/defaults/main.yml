@@ -1,0 +1,5 @@
+---
+zbx_version: 6.2
+zbx_server: 192.168.1.1
+zbx_passive_port: 10050
+zbx_active_port: 10051

@@ -1,0 +1,21 @@
+---
+argument_specs:
+  main:
+    short_description: The main entry point for the lpwoodhouse.zabbix-agent-linux role.
+    options:
+      zbx_version:
+        type: "float"
+        required: true
+        description: "This should be a float value and is used to configure the Zabbix download repository"
+      zbx_server:
+        type: "str"
+        required: true
+        description: "This should be an ip address or fqdn for the Zabbix server"
+      zbx_passive_port:
+        type: "int"
+        required: true
+        description: "This should be a port value from 1000-65535"
+      zbx_active_port:
+        type: "int"
+        required: true
+        description: "This should be a port value from 1000-65535"

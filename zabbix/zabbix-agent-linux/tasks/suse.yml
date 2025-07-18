@@ -1,0 +1,8 @@
+---
+- name: add Zabbix zypper repository
+  zypper_repository:
+    name: zabbix
+    repo: 'https://repo.zabbix.com/zabbix/{{ zbx_version }}/sles/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}/'
+    auto_import_keys: true
+    state: present
+    runrefresh: true

@@ -1,0 +1,27 @@
+---
+- name: gather package facts
+  package_facts:
+    manager: auto
+
+- name: gather service facts
+  service_facts:
+
+- name: install zabbix-agent package
+  package:
+    name: zabbix-agent
+    state: present
+
+- name: copy zabbix-agent configuration
+  blockinfile:
+    path: /etc/zabbix/zabbix_agentd.d/{{ ansible_hostname }}.conf
+    block: |
+      Server=0.0.0.0/0
+      ListenPort={{ zbx_passive_port }}
+      ServerActive={{ zbx_server }}:{{ zbx_active_port }}
+      Hostname={{ ansible_fqdn }}
+    owner: root
+    group: root
+    mode: 0644
+    create: true
+    backup: true
+  notify: start zabbix agent

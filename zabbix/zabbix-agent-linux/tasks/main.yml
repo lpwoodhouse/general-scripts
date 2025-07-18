@@ -1,0 +1,9 @@
+---
+- name: configure repository
+  include_tasks: "{{ ansible_os_family | lower }}.yml"
+
+- name: install and configure agent
+  include_tasks: agent.yml
+
+- name: configure firewall
+  include_tasks: firewall.yml

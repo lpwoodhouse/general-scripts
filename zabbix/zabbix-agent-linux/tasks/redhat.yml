@@ -1,0 +1,19 @@
+---
+- name: import Zabbix repo GPG key from url
+  rpm_key:
+    key: https://repo.zabbix.com/zabbix-official-repo.key
+    state: present
+
+- name: add Zabbix yum repository
+  yum_repository:
+    name: zabbix
+    description: zabbix {{ zbx_version }} yum repository
+    baseurl: https://repo.zabbix.com/zabbix/{{ zbx_version }}/rhel/$releasever/$basearch/
+    gpgcheck: false
+    enabled: true
+
+- name: update cache
+  command: yum makecache
+  args:
+    warn: false
+  ignore_errors: true

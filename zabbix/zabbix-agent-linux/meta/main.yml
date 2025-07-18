@@ -1,0 +1,36 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: Lee Woodhouse
+  description: Download, install and configure the Zabbix Agent on RHEL, Debian, Ubuntu, SLES and ARM-based distributions (Raspbian, Ubuntu-arm64)
+  company: www.leewoodhouse.com
+  license: MIT
+  min_ansible_version: 2.10
+  platforms:
+    - name: EL
+      versions:
+        - 7
+        - 8
+        - 9
+    - name: Debian
+      versions:
+        - stretch
+        - buster
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - bionic
+        - focal
+        - jammy
+    - name: SLES
+      versions:
+        - 12
+        - 12SP1
+        - 15
+  galaxy_tags:
+    - monitoring
+    - zabbix
+    - linux
+    - raspbian
+    - agent

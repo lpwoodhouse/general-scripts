@@ -1,0 +1,35 @@
+---
+- block:
+  - name: enable ports in firewalld
+    firewalld:
+      port: "{{ item }}/tcp"
+      permanent: true
+      state: enabled
+      immediate: true
+    loop:
+      - "{{ zbx_passive_port }}"
+      - "{{ zbx_active_port }}"
+
+  - shell: firewall-cmd --list-all
+    register: firewalld_status
+  - debug: msg={{ firewalld_status }}
+
+  when:
+    - "'firewalld' in ansible_facts.packages"
+    - ansible_facts.services['firewalld']['state'] == 'running'
+
+- block:
+  - name: allow ports in ufw
+    command: "{{ item }}"
+    loop:
+      - 'ufw allow in {{ zbx_passive_port }}/tcp'
+      - 'ufw allow out {{ zbx_active_port }}/tcp'
+
+  - shell: ufw status verbose
+    register: ufw_status
+  - debug: msg={{ ufw_status }}
+  
+  when:
+    - "'ufw' in ansible_facts.packages"
+    - ansible_facts.services['ufw']['state'] == 'running'
+  

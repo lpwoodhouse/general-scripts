@@ -1,0 +1,36 @@
+---
+- name: import Zabbix repo GPG key from url
+  apt_key:
+    url: https://repo.zabbix.com/zabbix-official-repo.key
+    state: present
+
+# configure repository for Ubuntu/Debian (amd64) distributions
+- name: add Zabbix apt repository (amd64)
+  apt_repository:
+    repo: "deb [arch=amd64] https://repo.zabbix.com/zabbix/{{ zbx_version }}/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} main"
+    filename: zabbix
+    update_cache: true
+    state: present
+  when: ansible_architecture == "x86_64"
+
+# configure repository for Raspbian (arm64) distributions
+- name: add Zabbix apt repository (arm64)
+  apt_repository:
+    repo: "deb [arch=arm64] https://repo.zabbix.com/zabbix/{{ zbx_version }}/{{ ansible_lsb.id|lower }} {{ ansible_distribution_release }} main"
+    filename: zabbix
+    update_cache: true
+    state: present
+  when:
+    - ansible_lsb.id == "Raspbian"
+    - ansible_architecture == "aarch64"
+
+# configure repository for Ubuntu (arm64) distributions
+- name: add Zabbix apt repository (arm64)
+  apt_repository:
+    repo: "deb [arch=arm64] https://repo.zabbix.com/zabbix/{{ zbx_version }}/{{ ansible_distribution|lower }}-arm64 {{ ansible_distribution_release }} main"
+    filename: zabbix
+    update_cache: true
+    state: present
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_architecture == "aarch64"

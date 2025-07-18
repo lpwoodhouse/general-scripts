@@ -1,0 +1,33 @@
+---
+# main tasks for pve_new_vm role
+- name: clone vm from template
+  proxmox_kvm:
+    api_user: "{{proxmox_user}}"
+    api_password: "{{proxmox_password}}"
+    api_host: "{{proxmox_host}}"
+    node: "{{proxmox_node}}"
+    name: "{{vm_name}}"
+    newid: "{{vm_id}}"
+    full: yes
+    storage: "{{vm_storage}}"
+    clone: "{{vm_clone}}"
+    state: present
+    proxmox_default_behavior: no_defaults
+    validate_certs: no
+    timeout: 500
+  register: results
+
+- name: power on new vm
+  proxmox_kvm:
+    api_user: "{{proxmox_user}}"
+    api_password: "{{proxmox_password}}"
+    api_host: "{{proxmox_host}}"
+    name: "{{vm_name}}"
+    state: started
+    force: yes
+    proxmox_default_behavior: no_defaults
+    validate_certs: no
+
+- name: results
+  debug:
+    msg: "{{ results }}"

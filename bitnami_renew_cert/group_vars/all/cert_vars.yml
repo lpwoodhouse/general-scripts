@@ -1,0 +1,5 @@
+---
+cert_email: <email> # The email used to register the certificate with LetsEncrypt
+cert_domain: <domain> # The certificate domain registered with LetsEncrypt
+cert_path: /opt/bitnami/letsencrypt/certificates/<domain>.crt
+

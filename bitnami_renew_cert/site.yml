@@ -1,0 +1,21 @@
+---
+# main task for role execution
+
+- name: renew the LetsEncrypt cert on a AWS Lightsail Bitnami instance
+  hosts: all
+  gather_facts: no
+  become: true
+  
+  tasks:  
+
+  - name: check cert
+    include_role:
+      name: check_cert
+
+  - name: renew cert
+    include_role:
+      name: renew_cert
+    
+  - name: renewal success
+    debug:
+      msg: new certificate expires {{ new_cert_info.not_after|to_datetime(format="%Y%m%d%H%M%S%z") }}

@@ -1,0 +1,38 @@
+---
+- name: get current cert info
+  community.crypto.x509_certificate_info:
+    path: "{{cert_path}}"
+    valid_at:
+      point_1: "-1m" # true if valid 1 minute ago, used to test if certificate is already expired
+      point_2: "+{{ max_validity }}d" # true if certificate is still valid in number of days specified by max_validity
+  register: cert_info
+
+- name: get datetimestamp
+  shell: "date +%Y%m%d%H%M%S%z"
+  register: tstamp
+
+- name: set datetime vars # set date/time variables into human readable formats
+  set_fact:
+    curr_dt: '{{ tstamp.stdout|to_datetime(format="%Y%m%d%H%M%S%z") }}'
+    cert_exp_dt: '{{ cert_info.not_after|to_datetime(format="%Y%m%d%H%M%S%z") }}'
+    days_rem: '{{ ((cert_info.not_after|to_datetime(format="%Y%m%d%H%M%S%z")) - (tstamp.stdout|to_datetime(format="%Y%m%d%H%M%S%z"))).days }}'
+
+- name: test cert validity
+  assert:
+    that:
+      - '(not cert_info.valid_at.point_1) or (not cert_info.valid_at.point_2)' # success is when either test equals false
+    quiet: true    
+    
+    success_msg:
+      The current certificate expiry was/is {{ cert_exp_dt }}. {{ days_rem }} days remaining.
+      Shorter than the defined maximum validity of {{ max_validity }} days before renewal will be carried out.
+      Certificate will be renewed. 
+    
+    fail_msg:
+      The current certificate is valid for {{ days_rem }} days.
+      Longer than the defined maximum validity of {{ max_validity }} days before renewal will be carried out.
+      Certificate will not be renewed at this time.
+  
+  when: not skip_check|bool
+
+# playbook will end with a fail here (desired outcome) if the certificate is valid for longer than defined maximum validity

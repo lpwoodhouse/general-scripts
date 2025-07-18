@@ -1,0 +1,40 @@
+---
+# main tasks for switch-location role
+
+- name: get current ip infomation
+  shell: >
+    curl ifconfig.io/country_code \
+    curl ifconfig.io/ip
+  register: ipinfo_initial
+
+- name: copy new location configuration template
+  template:
+    src: client.conf.j2
+    dest: "{{ config_file }}"
+    owner: root
+    group: root
+    mode: 0755
+    force: yes
+
+- name: restart openvpn service
+  service:
+    name: "{{ service }}"
+    state: restarted
+
+# wait for new vpn connection to establish
+- pause:
+    seconds: 15
+    prompt: wait for new connection to establish
+
+- name: get new ip infomation
+  shell: >
+    curl ifconfig.io/country_code \
+    curl ifconfig.io/ip
+  register: ipinfo_new
+
+- debug:
+    msg: 
+      - "Initial Connection:"
+      - "{{ ipinfo_initial.stdout_lines }}"
+      - "New Connection:"
+      - "{{ ipinfo_new.stdout_lines }}"

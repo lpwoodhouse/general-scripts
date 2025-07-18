@@ -1,0 +1,27 @@
+---
+# main task for role execution
+- name: configure inventory hosts
+  hosts: localhost
+  gather_facts: no
+  
+  vars:
+    linux_hosts: "{{ survey_hosts.split('\n') }}"  
+  
+  tasks:
+    
+  - name: make host group from survey hosts list
+    add_host:
+      hostname: "{{ item }}"
+      groupname: new_group      
+    loop: "{{ linux_hosts }}"
+
+- name: switch connecton location of linux openvpn client service
+  hosts: new_group,!localhost
+  gather_facts: no
+  become: true
+  
+  tasks:
+  
+  - name: switch location
+    include_role:
+      name: switch_location

@@ -1,0 +1,31 @@
+---
+# default variables for switch-location role
+
+# openvpn client service
+service: openvpn-client@client #redhat
+#service: openvpn@client #debian
+
+# path to openvpn config
+config_file: /etc/openvpn/client/client.conf #redhat
+#config_file: /etc/openvpn/client.conf #debian
+
+# expressvpn connection location
+location: usa-sanfrancisco
+#location: usa-newyork
+#location: usa-seattle
+#location: usa-new-jersey-1
+#location: usa-losangeles-1
+#location: usa-atlanta
+#location: usa-denver
+#location: uk-london
+#location: uk-docklands
+#location: uk-east-london
+#location: india-mumbia-1
+#location: india-chennai
+#location: singapore-cbd
+#location: singapore-marinabay
+#location: hongkong-1
+#location: hongkong-2
+#location: sweden
+#location: italy-milan
+#location: isleofman

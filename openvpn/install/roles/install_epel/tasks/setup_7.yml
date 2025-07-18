@@ -1,0 +1,22 @@
+---
+- name: install epel-release for CentOS
+  yum:
+    name: epel-release
+    state: present
+  when: ansible_distribution == "CentOS"
+
+- name: install epel-release for Enterprise Linux
+  block:
+  - name: enable RH repos
+    shell: >
+      subscription-manager repos --enable {{ item }}
+    loop:
+      - rhel-*-optional-rpms
+      - rhel-*-extras-rpms
+      - rhel-ha-for-rhel-*-server-rpms
+  - name: install epel-release
+    yum:
+      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      disable_gpg_check: yes
+      state: present
+  when: ansible_distribution == "RedHat"

@@ -1,0 +1,45 @@
+---
+# main tasks for install_openvpn role
+- name: install package
+  package:
+    name: "{{ packages|join(',') }}"
+    state: latest
+
+- name: enable ipv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: configure firewall exception
+  include_tasks: config_firewall.yml
+
+- name: openvpn client configuration
+  block:
+
+  - name: configure auth user file
+    lineinfile:
+      path: "{{ item.0.config_path }}/auth"
+      create: yes
+      line: "{{ item.1 }}"
+      owner: root
+      group: root
+      mode: 0600
+    no_log: true
+    loop: "{{ vpn_client_vars|product(auth)|list }}"
+    when: item.0.family == ansible_os_family
+
+  - name: copy configuration template
+    template:
+      src: client.conf.j2
+      dest: "{{ item.config_path }}/client.conf"
+      owner: root
+      group: root
+      mode: 0755
+      force: yes
+    changed_when: true
+    notify: restart openvpn service
+    loop: "{{ vpn_client_vars }}"
+    when: item.family == ansible_os_family

@@ -1,0 +1,44 @@
+---
+# tasks for installing and configuring firewall
+
+- name: firewalld configuration
+  block:
+
+  - name: install firewalld
+    package:
+      name: firewalld
+      state: present
+
+  - name: configure firewall exception
+    firewalld:
+      zone: trusted
+      interface: "{{ interface }}"
+      permanent: yes
+      state: enabled
+    notify: restart firewalld service
+
+  when: ansible_distribution in firewalld_distros
+
+- name: ufw configuration
+  block:
+
+  - name: install ufw
+    package:
+      name: ufw
+      state: present
+
+  - name: configure firewall exception
+    ufw:
+      rule: allow
+      interface: "{{ interface }}"
+      direction: "{{ item }}"
+      proto: any
+    loop:
+      - in
+      - out
+    notify: restart ufw service
+  
+  - name: enable ufw persistently
+    shell: ufw --force enable
+  
+  when: ansible_distribution in ufw_distros

@@ -1,0 +1,34 @@
+---
+# required variables for install_openvpn role
+
+# openvpn packages
+packages:
+  - openvpn
+
+# default interface
+interface: tun0
+
+# openvpn client variables
+vpn_client_vars:
+  - family: RedHat
+    service: openvpn-client@client
+    config_path: /etc/openvpn/client
+
+  - family: Debian
+    service: openvpn@client
+    config_path: /etc/openvpn
+
+  - family: Suse
+    service: openvpn@client
+    config_path: /etc/openvpn
+
+# compatible distro default firewalls
+firewalld_distros:
+  - RedHat
+  - CentOS
+  - Fedora
+  - Suse
+
+ufw_distros:
+  - Ubuntu
+  - Debian

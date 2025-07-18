@@ -1,0 +1,27 @@
+---
+- name: install epel-release for CentOS
+  block:
+  - name: enable codeready builder (crb)
+    shell: >
+      dnf config-manager --set-enabled crb
+  - name: install epel-release packages
+    dnf:
+      name: 
+        - epel-release
+        - epel-next-release
+      state: present
+  when: ansible_distribution == "CentOS"
+
+- name: install epel-release for Enterprise Linux
+  block:
+  - name: enable RH repos
+    shell: >
+      subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
+  - name: install epel-release
+    dnf:
+      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+      disable_gpg_check: yes
+      state: present
+  when: ansible_distribution == "RedHat"
+
+

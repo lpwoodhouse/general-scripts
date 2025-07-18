@@ -1,0 +1,52 @@
+---
+# main task for role execution
+- name: configure inventory hosts
+  hosts: localhost
+  gather_facts: no
+  
+  vars:
+    linux_hosts: "{{ survey_hosts.split('\n') }}"  
+  
+  tasks:
+    
+  - name: make host group from survey hosts list
+    add_host:
+      hostname: "{{ item }}"
+      groupname: new_group      
+    loop: "{{ linux_hosts }}"
+
+- name: download and configure openvpn client
+  hosts: new_group,!localhost
+  become: true
+  vars:
+    auth:
+      - "{{ auth_user }}"
+      - "{{ auth_pass }}"
+  
+  tasks:
+  
+  - name: install epel package repository
+    include_role:
+      name: install_epel
+    when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
+
+  - name: install openvpn client
+    include_role:
+      name: install_openvpn
+
+  - meta: flush_handlers
+
+  # wait for new vpn connection to establish
+  - pause:
+      seconds: 15
+      prompt: wait for new connection to establish
+
+  # verify connection
+  - name: verify connection
+    shell: >
+      curl ifconfig.io/all
+    register: results
+
+  - debug:
+      msg: "{{ results.stdout_lines }}"
+

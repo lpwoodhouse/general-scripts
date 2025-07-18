@@ -1,0 +1,8 @@
+---
+# expressvpn auth credentials
+auth:
+  - <expressvpn_manual_setup_username>
+  - <expressvpn_manual_setup_password>
+
+# expressvpn connection location
+location: usa-sanfrancisco

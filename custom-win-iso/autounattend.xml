@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<unattend xmlns="urn:schemas-microsoft-com:unattend">
+<unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
     <servicing>
         <package action="configure">
             <assemblyIdentity name="Microsoft-Windows-Foundation-Package" version="10.0.22621.1" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="" />
@@ -127,13 +127,13 @@
             </OOBE>
             <UserAccounts>
                 <AdministratorPassword>
-                    <Value>S3cretP@ssword</Value>
+                    <Value>REPLACE_PRIVATELY_BEFORE_USE</Value>
                     <PlainText>true</PlainText>
                 </AdministratorPassword>
                 <LocalAccounts>
                     <LocalAccount wcm:action="add">
                         <Password>
-                            <Value>S3cretP@ssword</Value>
+                            <Value>REPLACE_PRIVATELY_BEFORE_USE</Value>
                             <PlainText>true</PlainText>
                         </Password>
                         <DisplayName>sysadmin</DisplayName>
